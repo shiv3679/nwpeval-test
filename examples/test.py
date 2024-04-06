@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import nwpeval as nw
 
 # Load observation and model data
-obs_data = xr.open_dataset("india_obs_output_1km_realistic_storm.nc")
-model_data = xr.open_dataset("india_model_output_1km_realistic_storm.nc")
+obs_data = xr.open_dataset("india_obs_output_005deg_irregular_storm.nc")
+model_data = xr.open_dataset("india_model_output_005deg_irregular_storm.nc")
 
 # Extract lightning density variables
 obs_lightning = obs_data["lightning_density"] 

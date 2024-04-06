@@ -1,0 +1,38 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.metric-group-header {
+    background-color: #007bff; /* Bootstrap primary */
+    color: white;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.metric-group-header h4 {
+    margin: 0;
+}
+
+#latLonInputs {
+    background-color: #f8f9fa; /* Light background */
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.form-control {
+    border-radius: 0.25rem; /* Rounded borders for inputs */
+}
+
+.btn-success {
+    background-color: #28a745; /* Bootstrap success color */
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.btn-success:hover {
+    background-color: #218838; /* Darker on hover */
+}

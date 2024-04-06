@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NWPeval - Metrics Calculator</title>
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Optional: Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .metric-group-header {
+            cursor: pointer;
+            user-select: none;
+        }
+        .form-check-label {
+            margin-bottom: 0; /* Adjusts label bottom margin */
+        }
+        /* Custom styles for modern and classy appearance */
+        .metric-group {
+            padding: 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+            background-color: #f8f9fa; /* Light grey background */
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075); /* Subtle shadow */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Select Metrics to Compute</h1>
+        <form action="/compute" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="obsDataFile">Observation Data File</label>
+                <input type="file" class="form-control-file" id="obsDataFile" name="obs_data">
+            </div>
+            <div class="form-group">
+                <label for="modelDataFile">Model Data File</label>
+                <input type="file" class="form-control-file" id="modelDataFile" name="model_data">
+            </div>
+    
+            <div class="metric-group">
+                <div class="metric-group-header" data-toggle="collapse" data-target="#errorMetrics" aria-expanded="true">
+                    <h4>Error Metrics</h4>
+                </div>
+                <div id="errorMetrics" class="collapse show">
+                    <div class="row">
+                        <!-- Metric checkboxes will go here -->
+                        <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                            <input class="form-check-input" type="checkbox" name="metrics" value="MeanAbsoluteError" id="MeanAbsoluteError">
+                            <label class="form-check-label" for="MeanAbsoluteError">Mean Absolute Error (MAE)</label>
+                        </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="RootMeanSquareError" id="RootMeanSquareError">
+                        <label class="form-check-label" for="RootMeanSquareError">Root Mean Square Error (RMSE)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="AnomalyCorrelationCoefficient" id="AnomalyCorrelationCoefficient">
+                        <label class="form-check-label" for="AnomalyCorrelationCoefficient">Anomaly Correlation Coefficient (ACC)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="FractionsSkillScore" id="FractionsSkillScore">
+                        <label class="form-check-label" for="FractionsSkillScore">Fractions Skill Score (FSS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="EquitableThreatScore" id="EquitableThreatScore">
+                        <label class="form-check-label" for="EquitableThreatScore">Equitable Threat Score (ETS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="ProbabilityofDetection" id="ProbabilityofDetection">
+                        <label class="form-check-label" for="ProbabilityofDetection">Probability of Detection (POD)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="FalseAlarmRatio" id="FalseAlarmRatio">
+                        <label class="form-check-label" for="FalseAlarmRatio">False Alarm Ratio (FAR)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="CriticalSuccessIndex" id="CriticalSuccessIndex">
+                        <label class="form-check-label" for="CriticalSuccessIndex">Critical Success Index (CSI)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="BrierSkillScore" id="BrierSkillScore">
+                        <label class="form-check-label" for="BrierSkillScore">Brier Skill Score (BSS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="HeidkeSkillScore" id="HeidkeSkillScore">
+                        <label class="form-check-label" for="HeidkeSkillScore">Heidke Skill Score (HSS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="PeirceSkillScore" id="PeirceSkillScore">
+                        <label class="form-check-label" for="PeirceSkillScore">Peirce Skill Score (PSS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="GilbertSkillScore" id="GilbertSkillScore">
+                        <label class="form-check-label" for="GilbertSkillScore">Gilbert Skill Score (GS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="SymmetricExtremeDependencyScore" id="SymmetricExtremeDependencyScore">
+                        <label class="form-check-label" for="SymmetricExtremeDependencyScore">Symmetric Extreme Dependency Score (SEDS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="FrequencyBias" id="FrequencyBias">
+                        <label class="form-check-label" for="FrequencyBias">Frequency Bias (FB)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="GilbertSkillScore" id="GilbertSkillScore">
+                        <label class="form-check-label" for="GilbertSkillScore">Gilbert Skill Score (GSS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="Hanssen-KuipersDiscriminant" id="Hanssen-KuipersDiscriminant">
+                        <label class="form-check-label" for="Hanssen-KuipersDiscriminant">Hanssen-Kuipers Discriminant (H-KD)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="OddsRatioSkillScore" id="OddsRatioSkillScore">
+                        <label class="form-check-label" for="OddsRatioSkillScore">Odds Ratio Skill Score (ORSS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="ExtremeDependencyScore" id="ExtremeDependencyScore">
+                        <label class="form-check-label" for="ExtremeDependencyScore">Extreme Dependency Score (EDS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="SymmetricExtremalDependenceIndex" id="SymmetricExtremalDependenceIndex">
+                        <label class="form-check-label" for="SymmetricExtremalDependenceIndex">Symmetric Extremal Dependence Index (SEDI)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="RankedProbabilitySkillScore" id="RankedProbabilitySkillScore">
+                        <label class="form-check-label" for="RankedProbabilitySkillScore">Ranked Probability Skill Score (RPSS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="TotalSquaredError" id="TotalSquaredError">
+                        <label class="form-check-label" for="TotalSquaredError">Total Squared Error (TSE)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="ExplainedVarianceScore" id="ExplainedVarianceScore">
+                        <label class="form-check-label" for="ExplainedVarianceScore">Explained Variance Score (EVS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="NormalizedMeanSquaredError" id="NormalizedMeanSquaredError">
+                        <label class="form-check-label" for="NormalizedMeanSquaredError">Normalized Mean Squared Error (NMSE)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="FractionalVariance" id="FractionalVariance">
+                        <label class="form-check-label" for="FractionalVariance">Fractional Variance (FV)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="PearsonCorrelationCoefficient" id="PearsonCorrelationCoefficient">
+                        <label class="form-check-label" for="PearsonCorrelationCoefficient">Pearson Correlation Coefficient (PCC)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="StandardDeviationRatio" id="StandardDeviationRatio">
+                        <label class="form-check-label" for="StandardDeviationRatio">Standard Deviation Ratio (SDR)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="VarianceInflationFactor" id="VarianceInflationFactor">
+                        <label class="form-check-label" for="VarianceInflationFactor">Variance Inflation Factor (VIF)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="MedianAbsoluteDeviation" id="MedianAbsoluteDeviation">
+                        <label class="form-check-label" for="MedianAbsoluteDeviation">Median Absolute Deviation (MAD)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="InterquartileRange" id="InterquartileRange">
+                        <label class="form-check-label" for="InterquartileRange">Interquartile Range (IQR)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="CoefficientofDetermination" id="CoefficientofDetermination">
+                        <label class="form-check-label" for="CoefficientofDetermination">Coefficient of Determination (R^2)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="NormalizedAbsoluteError" id="NormalizedAbsoluteError">
+                        <label class="form-check-label" for="NormalizedAbsoluteError">Normalized Absolute Error (NAE)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="RelativeMeanBias" id="RelativeMeanBias">
+                        <label class="form-check-label" for="RelativeMeanBias">Relative Mean Bias (RMB)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="MeanAbsolutePercentageError" id="MeanAbsolutePercentageError">
+                        <label class="form-check-label" for="MeanAbsolutePercentageError">Mean Absolute Percentage Error (MAPE)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="WeightedMeanAbsoluteError" id="WeightedMeanAbsoluteError">
+                        <label class="form-check-label" for="WeightedMeanAbsoluteError">Weighted Mean Absolute Error (WMAE)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="AbsoluteSkillScore" id="AbsoluteSkillScore">
+                        <label class="form-check-label" for="AbsoluteSkillScore">Absolute Skill Score (ASS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="RelativeSkillScore" id="RelativeSkillScore">
+                        <label class="form-check-label" for="RelativeSkillScore">Relative Skill Score (RSS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="QuadraticSkillScore" id="QuadraticSkillScore">
+                        <label class="form-check-label" for="QuadraticSkillScore">Quadratic Skill Score (QSS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="NormalizedRootMeanSquaredError" id="NormalizedRootMeanSquaredError">
+                        <label class="form-check-label" for="NormalizedRootMeanSquaredError">Normalized Root Mean Squared Error (NRMSE)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="LogarithmicMeanBiasError" id="LogarithmicMeanBiasError">
+                        <label class="form-check-label" for="LogarithmicMeanBiasError">Logarithmic Mean Bias Error (LMBE)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="ScaledMeanSquaredError" id="ScaledMeanSquaredError">
+                        <label class="form-check-label" for="ScaledMeanSquaredError">Scaled Mean Squared Error (SMSE)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="MeanBiasDeviation" id="MeanBiasDeviation">
+                        <label class="form-check-label" for="MeanBiasDeviation">Mean Bias Deviation (MBD)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="GeometricMeanBias" id="GeometricMeanBias">
+                        <label class="form-check-label" for="GeometricMeanBias">Geometric Mean Bias (GMB)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="SymmetricBrierScore" id="SymmetricBrierScore">
+                        <label class="form-check-label" for="SymmetricBrierScore">Symmetric Brier Score (SBS)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="AdjustedExplainedVariance" id="AdjustedExplainedVariance">
+                        <label class="form-check-label" for="AdjustedExplainedVariance">Adjusted Explained Variance (AEV)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="CosineSimilarity" id="CosineSimilarity">
+                        <label class="form-check-label" for="CosineSimilarity">Cosine Similarity</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="F1Score" id="F1Score">
+                        <label class="form-check-label" for="F1Score">F1 Score</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="MatthewsCorrelationCoefficient" id="MatthewsCorrelationCoefficient">
+                        <label class="form-check-label" for="MatthewsCorrelationCoefficient">Matthews Correlation Coefficient (MCC)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="BalancedAccuracy" id="BalancedAccuracy">
+                        <label class="form-check-label" for="BalancedAccuracy">Balanced Accuracy (BA)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="NegativePredictiveValue" id="NegativePredictiveValue">
+                        <label class="form-check-label" for="NegativePredictiveValue">Negative Predictive Value (NPV)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="JaccardSimilarityCoefficient" id="JaccardSimilarityCoefficient">
+                        <label class="form-check-label" for="JaccardSimilarityCoefficient">Jaccard Similarity Coefficient</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="Gain" id="Gain">
+                        <label class="form-check-label" for="Gain">Gain</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="Lift" id="Lift">
+                        <label class="form-check-label" for="Lift">Lift</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="MeanKullback-LeiblerDivergence" id="MeanKullback-LeiblerDivergence">
+                        <label class="form-check-label" for="MeanKullback-LeiblerDivergence">Mean Kullback-Leibler Divergence (MKLDIV)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="Jensen-ShannonDivergence" id="Jensen-ShannonDivergence">
+                        <label class="form-check-label" for="Jensen-ShannonDivergence">Jensen-Shannon Divergence (JSDIV)</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="HellingerDistance" id="HellingerDistance">
+                        <label class="form-check-label" for="HellingerDistance">Hellinger Distance</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="WassersteinDistance" id="WassersteinDistance">
+                        <label class="form-check-label" for="WassersteinDistance">Wasserstein Distance</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="TotalVariationDistance" id="TotalVariationDistance">
+                        <label class="form-check-label" for="TotalVariationDistance">Total Variation Distance</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="Chi-SquareDistance" id="Chi-SquareDistance">
+                        <label class="form-check-label" for="Chi-SquareDistance">Chi-Square Distance</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="Intersection" id="Intersection">
+                        <label class="form-check-label" for="Intersection">Intersection</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="BhattacharyyaDistance" id="BhattacharyyaDistance">
+                        <label class="form-check-label" for="BhattacharyyaDistance">Bhattacharyya Distance</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="HarmonicMean" id="HarmonicMean">
+                        <label class="form-check-label" for="HarmonicMean">Harmonic Mean</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="GeometricMean" id="GeometricMean">
+                        <label class="form-check-label" for="GeometricMean">Geometric Mean</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="LehmerMean" id="LehmerMean">
+                        <label class="form-check-label" for="LehmerMean">Lehmer Mean</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="ChernoffDistance" id="ChernoffDistance">
+                        <label class="form-check-label" for="ChernoffDistance">Chernoff Distance</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="RényiDivergence" id="RényiDivergence">
+                        <label class="form-check-label" for="RényiDivergence">Rényi Divergence</label>
+                    </div>
+                    
+                    <div class="col-sm-6 col-md-3 form-check metric-checkbox">
+                        <input class="form-check-input" type="checkbox" name="metrics" value="TsallisDivergence" id="TsallisDivergence">
+                        <label class="form-check-label" for="TsallisDivergence">Tsallis Divergence</label>
+                    </div>
+                    
+            
+                    
+
+                    
+
+                    <!-- Add more metrics here, following the pattern -->
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Compute</button>
+    </form>
+    <br>
+    <!-- Plot Type and Coordinates Input Section -->
+<div class="form-group">
+    <div class="metric-group-header" data-toggle="collapse" data-target="#plotTypeSection" aria-expanded="true">
+        <h4>Select the type of plot you wish to generate!</h4>
+    </div>
+    <div id="plotTypeSection" class="collapse show">
+        <label>Select Plot Type:</label>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="plotType" id="spatial" value="spatial" checked>
+            <label class="form-check-label" for="spatial">Spatial</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="plotType" id="timeSeries" value="timeSeries">
+            <label class="form-check-label" for="timeSeries">Time Series</label>
+        </div>
+    </div>
+</div>
+
+<!-- Latitude and Longitude Inputs -->
+<div class="form-group" id="latLonInputs" style="display: none;">
+    <div class="row">
+        <div class="col-md-6">
+            <label for="startLatitude">Start Latitude:</label>
+            <input type="text" class="form-control" id="startLatitude" name="startLatitude" placeholder="Enter start latitude">
+        </div>
+        <div class="col-md-6">
+            <label for="stopLatitude">Stop Latitude:</label>
+            <input type="text" class="form-control" id="stopLatitude" name="stopLatitude" placeholder="Enter stop latitude">
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-md-6">
+            <label for="startLongitude">Start Longitude:</label>
+            <input type="text" class="form-control" id="startLongitude" name="startLongitude" placeholder="Enter start longitude">
+        </div>
+        <div class="col-md-6">
+            <label for="stopLongitude">Stop Longitude:</label>
+            <input type="text" class="form-control" id="stopLongitude" name="stopLongitude" placeholder="Enter stop longitude">
+        </div>
+    </div>
+</div>
+
+<!-- Plot Generation Button -->
+<div class="form-group">
+    <button type="submit" class="btn btn-success mt-3">Generate Plot</button>
+</div>
+
+
+</div>
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Toggle Latitude and Longitude Inputs based on Plot Type
+        $('input[type=radio][name=plotType]').change(function() {
+            if (this.value === 'spatial') {
+                $("#latLonInputs").show();
+            }
+            else if (this.value === 'timeSeries') {
+                $("#latLonInputs").hide();
+            }
+        });
+    });
+    </script>
+    
+</body>
+</html>

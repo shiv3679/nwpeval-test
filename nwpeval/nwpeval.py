@@ -74,7 +74,7 @@ class NWP_Stats:
             elif metric == 'PSS':
                 threshold = thresholds.get('PSS', 0.5)
                 metric_values[metric] = self.compute_pss(threshold, dim)
-            elif metric == 'GS':
+            elif metric == 'GS':  # first instance of gilbert skill score, another instance of the same metric present
                 threshold = thresholds.get('GS', 0.5)
                 metric_values[metric] = self.compute_gs(threshold, dim)
             elif metric == 'SEDS':
@@ -83,7 +83,7 @@ class NWP_Stats:
             elif metric == 'FB':
                 threshold = thresholds.get('FB', 0.5)
                 metric_values[metric] = self.compute_fb(threshold, dim)
-            elif metric == 'GSS':
+            elif metric == 'GSS':   # similar to gs (Gilbert skill score) (same instance of the gss metric, should be removed)
                 threshold = thresholds.get('GSS', 0.5)
                 metric_values[metric] = self.compute_gss(threshold, dim)
             elif metric == 'H-KD':

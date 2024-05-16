@@ -37,6 +37,12 @@
                 </tbody>
             </table>
         </div>
+        {% if plot_path %}
+            <div class="plot mt-4">
+                <h3>Generated Plot</h3>
+                <img src="{{ url_for('static', filename=plot_path.split('/')[-1]) }}" class="img-fluid" alt="Generated Plot">
+            </div>
+        {% endif %}
         <a href="/" class="btn btn-primary mt-3">Compute Again</a>
     </div>
     <!-- Bootstrap JavaScript CDN -->

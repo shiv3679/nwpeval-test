@@ -1,35 +1,74 @@
-from flask import Flask, render_template, request, redirect, url_for
-# Import your NWP_Stats class here
-# from your_module import NWP_Stats
+from flask import Flask, request, render_template, redirect, url_for, flash
+import xarray as xr
+import numpy as np
+import os
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.secret_key = 'supersecretkey'
 
-# Dummy function for NWP_Stats computation
-# You'll replace this with actual computations using your NWP_Stats class
-def compute_nwp_stats(metrics):
-    # This is where you'd use your NWP_Stats class
-    # For demonstration, this just returns a string
-    return f"Computed metrics: {', '.join(metrics)}"
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
+
+def mean_absolute_error(obs, model):
+    return np.mean(np.abs(obs - model))
+
+def root_mean_square_error(obs, model):
+    return np.sqrt(np.mean((obs - model)**2))
+
+def anomaly_correlation_coefficient(obs, model):
+    obs_anomaly = obs - np.mean(obs)
+    model_anomaly = model - np.mean(model)
+    return np.corrcoef(obs_anomaly, model_anomaly)[0, 1]
 
 @app.route('/')
-def home():
-    # Render the home page with the form
+def index():
     return render_template('index.html')
 
 @app.route('/compute', methods=['POST'])
 def compute_metrics():
-    selected_metrics = request.form.getlist('metrics')
-    if not selected_metrics:
-        # Handle the case where no metrics are selected
-        return "Please select at least one metric.", 400
-    
-    # Compute the selected metrics using your NWP_Stats class
-    # For demonstration, we're just using a dummy function
-    result = compute_nwp_stats(selected_metrics)
-    
-    # For now, we'll just redirect to the home page after computing
-    # You could render a results page or return a response with the results
-    return redirect(url_for('home'))
+    try:
+        obs_data_file = request.files['obs_data']
+        model_data_file = request.files['model_data']
+        metrics = request.form.getlist('metrics')
+        plot_type = request.form.get('plotType', None)
+
+        if not obs_data_file or not model_data_file or not metrics:
+            flash('Please upload both data files and select at least one metric.')
+            return redirect(url_for('index'))
+
+        obs_data_path = os.path.join(app.config['UPLOAD_FOLDER'], obs_data_file.filename)
+        model_data_path = os.path.join(app.config['UPLOAD_FOLDER'], model_data_file.filename)
+
+        obs_data_file.save(obs_data_path)
+        model_data_file.save(model_data_path)
+
+        obs_data = xr.open_dataarray(obs_data_path)
+        model_data = xr.open_dataarray(model_data_path)
+
+        if obs_data is None or model_data is None:
+            flash('Error loading data files.')
+            return redirect(url_for('index'))
+
+        results = {}
+        if 'MeanAbsoluteError' in metrics:
+            results['MAE'] = mean_absolute_error(obs_data.values, model_data.values)
+        if 'RootMeanSquareError' in metrics:
+            results['RMSE'] = root_mean_square_error(obs_data.values, model_data.values)
+        if 'AnomalyCorrelationCoefficient' in metrics:
+            results['ACC'] = anomaly_correlation_coefficient(obs_data.values, model_data.values)
+
+        if not results:
+            flash('No results computed. Please check the input data and metrics.')
+            return redirect(url_for('index'))
+
+        return render_template('results.html', results=results)
+    except KeyError as e:
+        flash(f'Missing form field: {e}')
+        return redirect(url_for('index'))
+    except Exception as e:
+        flash(f'An error occurred: {e}')
+        return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
